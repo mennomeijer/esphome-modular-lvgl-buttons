@@ -5,14 +5,20 @@ globals:
     initial_value: 'false'
 
 image:
-  rgb565:
-    alpha_channel:
-      - file: 'esphome-modular-lvgl-buttons/assets/images/loading/homeassistant.png'
-        id: ha_img
-        resize: 400x82
-      - file: 'esphome-modular-lvgl-buttons/assets/images/loading/esphome.png'
-        id: esphome_img
-        resize: 320x95
+  - platform: file
+    type: rgb565
+    transparency: alpha_channel
+    file: 'esphome-modular-lvgl-buttons/assets/images/loading/homeassistant.png'
+    id: ha_img
+    resize: 400x82
+    byte_order: ${loading_byte_order | default("big_endian")}
+  - platform: file
+    type: rgb565
+    transparency: alpha_channel
+    file: 'esphome-modular-lvgl-buttons/assets/images/loading/esphome.png'
+    id: esphome_img
+    resize: 320x95
+    byte_order: ${loading_byte_order | default("big_endian")}
 
 lvgl:
   top_layer:
