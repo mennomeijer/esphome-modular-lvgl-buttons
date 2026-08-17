@@ -13,7 +13,7 @@ substitutions:
   display_night_hour: "22"
   display_night_minute: "0"
   display_backlight_timeout_always_enabled: "false"
-  display_backlight_timeout_initial: "600"
+  display_backlight_timeout_initial: "15"
   screen_width: "480"
   screen_height: "480"
 
@@ -80,6 +80,12 @@ packages:
       column: 0
       text: "Kitchen Light"
       icon: $mdi_ceiling_light
+      scene_1_entity_id: "scene.keuken_night"
+      scene_1_text: "Night"
+      scene_1_icon: $mdi_weather_night
+      scene_2_entity_id: "scene.keuken_1_2"
+      scene_2_text: "1 & 2"
+      scene_2_icon: $mdi_lightbulb_group
 
   hal_light: !include
     file: esphome-modular-lvgl-buttons/ui/light/remote.yaml
@@ -159,6 +165,9 @@ font:
       - $mdi_circle_opacity
       - $mdi_eyedropper
       - $mdi_lightbulb
+      - $mdi_palette
+      - $mdi_weather_night
+      - $mdi_lightbulb_group
 
       # Main dashboard icons
       - $mdi_ceiling_light

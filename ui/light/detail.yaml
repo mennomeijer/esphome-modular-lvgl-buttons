@@ -8,6 +8,19 @@
 #   text:     light name shown on the detail page header
 #   page_id:  parent page to return to (default: main_page)
 #
+#   Optional second "scenes" screen — up to two Home Assistant scene buttons,
+#   opened via a button on the main detail screen. Scenes have no local
+#   ESPHome equivalent, so these always call Home Assistant directly,
+#   regardless of whether the light itself is local or remote. Leave a
+#   scene's entity_id blank (the default) to omit that button; the access
+#   button itself is hidden if neither scene is configured.
+#   scene_1_entity_id: HA scene entity, e.g. "scene.keuken_night" (optional)
+#   scene_1_text:      label for the scene 1 button (optional)
+#   scene_1_icon:      icon glyph for the scene 1 button (optional)
+#   scene_2_entity_id: HA scene entity (optional)
+#   scene_2_text:      label for the scene 2 button (optional)
+#   scene_2_icon:      icon glyph for the scene 2 button (optional)
+#
 # Scripts the button MUST define:
 #   ${uid}_light_toggle           — toggle the light on/off
 #   ${uid}_light_set_brightness   — apply id(${uid}_current_brightness) [0.0–1.0]
@@ -400,6 +413,34 @@ lvgl:
             text_color: 0x888888
             text: $mdi_lightbulb
 
+    # SCENES BUTTON — opens the optional scenes screen
+    # Hidden unless at least one scene is configured
+    - obj:
+        id: ${uid}_scenes_btn
+        x: 60
+        y: 0
+        width: 80
+        height: 70
+        align: bottom_left
+        bg_opa: transp
+        pad_all: 0
+        border_opa: transp
+        border_width: 0
+        shadow_opa: transp
+        radius: 0
+        hidden: ${"false" if (scene_1_entity_id | default("") != "" or scene_2_entity_id | default("") != "") else "true"}
+        widgets:
+        - label:
+            align: center
+            text_font: $icon_font
+            text_color: steel_blue
+            text: $mdi_palette
+        on_click:
+        - lvgl.page.show:
+            id: ${uid}_light_scenes_page
+            animation: MOVE_LEFT
+            time: 300ms
+
     # BACK BUTTON
     - obj:
         id: ${uid}_back_btn
@@ -435,6 +476,123 @@ lvgl:
         on_click:
         - lvgl.page.show:
             id: ${page_id | default("main_page")}
+            animation: MOVE_RIGHT
+            time: 300ms
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # SCENES SCREEN (optional) — up to two Home Assistant scene buttons
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: ${uid}_light_scenes_page
+    styles: page_style
+    scrollable: false
+    scrollbar_mode: "OFF"
+    widgets:
+
+    # LIGHT NAME LABEL
+    - label:
+        y: -420
+        x: 0
+        height: 40
+        width: 240
+        long_mode: dot
+        align: bottom_left
+        text_font: nunito_18
+        text_align: center
+        text_color: misty_blue
+        text: ${text}
+
+    # SCENE 1 BUTTON
+    - button:
+        id: ${uid}_scene_1_btn
+        width: 260
+        height: 80
+        align: center
+        y: -50
+        bg_color: $button_off_color
+        radius: 12
+        hidden: ${"false" if scene_1_entity_id | default("") != "" else "true"}
+        on_short_click:
+        - homeassistant.action:
+            action: scene.turn_on
+            data:
+              entity_id: ${scene_1_entity_id | default("")}
+        widgets:
+        - label:
+            align: left_mid
+            x: 15
+            text_font: $icon_font
+            text_color: $icon_off_color
+            text: ${scene_1_icon | default("")}
+        - label:
+            align: right_mid
+            x: -15
+            text_font: nunito_20
+            text_color: $label_off_color
+            text: ${scene_1_text | default("")}
+
+    # SCENE 2 BUTTON
+    - button:
+        id: ${uid}_scene_2_btn
+        width: 260
+        height: 80
+        align: center
+        y: 50
+        bg_color: $button_off_color
+        radius: 12
+        hidden: ${"false" if scene_2_entity_id | default("") != "" else "true"}
+        on_short_click:
+        - homeassistant.action:
+            action: scene.turn_on
+            data:
+              entity_id: ${scene_2_entity_id | default("")}
+        widgets:
+        - label:
+            align: left_mid
+            x: 15
+            text_font: $icon_font
+            text_color: $icon_off_color
+            text: ${scene_2_icon | default("")}
+        - label:
+            align: right_mid
+            x: -15
+            text_font: nunito_20
+            text_color: $label_off_color
+            text: ${scene_2_text | default("")}
+
+    # BACK BUTTON (returns to the light controls screen)
+    - obj:
+        x: 150
+        y: 0
+        width: 80
+        height: 70
+        align: bottom_left
+        bg_opa: transp
+        pad_all: 0
+        border_opa: transp
+        border_width: 0
+        shadow_opa: transp
+        radius: 0
+        widgets:
+        - obj:
+            y: -20
+            width: 80
+            height: 5
+            align: bottom_mid
+            bg_color: steel_blue
+            pad_all: 0
+            border_opa: transp
+            border_width: 0
+            shadow_opa: transp
+            radius: 15
+            scrollable: false
+        - label:
+            align: center
+            text_font: $icon_font
+            text_color: steel_blue
+            text: $mdi_chevron_up
+        on_click:
+        - lvgl.page.show:
+            id: ${uid}_light_page
             animation: MOVE_RIGHT
             time: 300ms
 
