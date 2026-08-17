@@ -35,12 +35,6 @@ logger:
     lvgl: info
   hardware_uart: UART0
 
-# Some screens need little_endian byte order and some need big_endian
-# this sets the byte order for all the images loaded in this file and the packages as well
-image:
-  defaults:
-    byte_order: little_endian
-
 # Time update script - This is run once per second. Use it to update any time related labels.
 script:
   # --------------------------------------------------------------------------
@@ -81,7 +75,11 @@ packages:
 
   # Basic boot screen with ESPHome logo and device diagnostic info
   # Note: loading may need adjustment for 800x1280 resolution
-  loading_screen: !include esphome-modular-lvgl-buttons/pages/loading.yaml
+  # Some screens need little_endian byte order for images and some need big_endian
+  loading_screen: !include
+    file: esphome-modular-lvgl-buttons/pages/loading.yaml
+    vars:
+      loading_byte_order: little_endian
   # info screen - WiFi login, IP address, MAC address etc
   info_screen: !include esphome-modular-lvgl-buttons/pages/info.yaml
 
