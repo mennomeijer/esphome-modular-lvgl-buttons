@@ -19,8 +19,6 @@ sensor:
   - platform: internal_temperature
     id: cpu_temperature
     name: "CPU Temperature"
-    filters:
-      - lambda: return (x * 1.8) + 32;
     unit_of_measurement: "°C"
     icon: mdi:thermometer
     entity_category: diagnostic
