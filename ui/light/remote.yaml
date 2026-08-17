@@ -12,6 +12,8 @@
 #   row_span:     (default: 1)
 #   column_span:  (default: 1)
 #   page_id:      parent page (default: main_page)
+#   scene_1_entity_id/scene_1_text/scene_1_icon: optional scene 1 (see detail.yaml)
+#   scene_2_entity_id/scene_2_text/scene_2_icon: optional scene 2 (see detail.yaml)
 
 packages:
   ${uid}_detail: !include
@@ -20,6 +22,12 @@ packages:
       uid: ${uid}
       text: ${text}
       page_id: ${page_id | default("main_page")}
+      scene_1_entity_id: ${scene_1_entity_id | default("")}
+      scene_1_text: ${scene_1_text | default("")}
+      scene_1_icon: ${scene_1_icon | default("")}
+      scene_2_entity_id: ${scene_2_entity_id | default("")}
+      scene_2_text: ${scene_2_text | default("")}
+      scene_2_icon: ${scene_2_icon | default("")}
 
 lvgl:
   pages:
