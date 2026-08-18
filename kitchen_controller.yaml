@@ -128,21 +128,20 @@ packages:
       entity_id: "cover.office_blinds"
       hide_slider: "true"   
 
-  # HEATING BOOST
+  # KITCHEN RADIO
 
-  heating_boost: !include
-    file: esphome-modular-lvgl-buttons/ui/sensor_button/remote.yaml
+  kitchen_radio: !include
+    file: esphome-modular-lvgl-buttons/ui/media_button/remote.yaml
     vars:
-      uid: heating_boost
-      entity_id: "sensor.thermostat_current_temperature"
-      action_entity_id: "script.heating_boost_1_hour"
-      active_duration: "60"
+      uid: kitchen_radio
       row: 1
       column: 1
-      text: "Boost Heating"
-      icon: $mdi_thermometer_chevron_up
-      unit: "°C"
-      precision: 0
+      text: "Radio"
+      icon: $mdi_radio
+      scene_entity_id: "scene.listen_stubru_kitchen"
+      scene_text: "StuBru"
+      scene_icon: $mdi_radio
+      media_player_entity_id: "media_player.denon_avr_x3100w_2"
 
 lvgl:
   pages:
@@ -174,21 +173,22 @@ font:
       - $mdi_blinds
       - $mdi_clock_time_eight
       - $mdi_cellphone_charging
-      - $mdi_thermometer
-      - $mdi_thermometer_chevron_up
       - $mdi_information_box
       - $mdi_remote_desktop
       - $mdi_power_plug
       - $mdi_led_strip
       - $mdi_play
-      - $mdi_pause 
-      - $mdi_skip_next 
-      - $mdi_skip_previous                                                                                                 
-      - $mdi_shuffle 
-      - $mdi_repeat 
-      - $mdi_repeat_once                                                                                                               
-      - $mdi_volume_high 
+      - $mdi_pause
+      - $mdi_skip_next
+      - $mdi_skip_previous
+      - $mdi_shuffle
+      - $mdi_repeat
+      - $mdi_repeat_once
+      - $mdi_volume_high
+      - $mdi_volume_minus
+      - $mdi_volume_plus
       - $mdi_music_note
+      - $mdi_radio
       - $mdi_chevron_left
         
   - file: "gfonts://Nunito"

@@ -1,0 +1,64 @@
+---
+# Remote media button tile — home-screen shortcut to a small quick-actions
+# panel (a scene shortcut + volume controls for a media_player).
+# There is no single primary action to assign to a tap, so short-click opens
+# the detail page directly (same convention as the climate tile).
+#
+# vars:
+#   uid:                     unique identifier
+#   row:                     grid row
+#   column:                  grid column
+#   text:                    tile label / detail page header
+#   icon:                    icon glyph (e.g. $mdi_radio)
+#   row_span:                (default: 1)
+#   column_span:             (default: 1)
+#   page_id:                 parent page (default: main_page)
+#   scene_entity_id:         HA scene entity activated by the panel's scene button
+#   scene_text:              label for the scene button
+#   scene_icon:              icon glyph for the scene button
+#   media_player_entity_id:  HA media_player entity controlled by the volume buttons
+
+packages:
+  ${uid}_detail: !include
+    file: detail.yaml
+    vars:
+      uid: ${uid}
+      text: ${text}
+      page_id: ${page_id | default("main_page")}
+      scene_entity_id: ${scene_entity_id}
+      scene_text: ${scene_text}
+      scene_icon: ${scene_icon}
+      media_player_entity_id: ${media_player_entity_id}
+
+lvgl:
+  pages:
+  - id: !extend ${page_id | default("main_page")}
+    widgets:
+    - container:
+        id: ${uid}_tile
+        grid_cell_row_pos: ${row}
+        grid_cell_column_pos: ${column}
+        grid_cell_row_span: ${row_span | default(1)}
+        grid_cell_column_span: ${column_span | default(1)}
+        grid_cell_x_align: stretch
+        grid_cell_y_align: stretch
+        widgets:
+        - button:
+            id: button_${uid}
+            widgets:
+            - label:
+                id: icon_${uid}
+                text_font: $icon_font
+                align: top_left
+                text: ${icon}
+            - label:
+                id: label_${uid}
+                align: bottom_left
+                long_mode: DOT
+                width: 85%
+                text: ${text}
+            on_short_click:
+            - lvgl.page.show:
+                id: ${uid}_detail_page
+                animation: MOVE_LEFT
+                time: 300ms
