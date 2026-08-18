@@ -166,6 +166,7 @@ esphome run my-panel.yaml
 | `number` | 🔜 | 🔜 | 🔜 | Setpoints, PID targets |
 | `select` | 🔜 | 🔜 | 🔜 | Operating modes, option lists |
 | [`media_player`](ui/media_player/README.md) | — | ✅ | ✅ | Remote-only; transport controls, volume, progress. Optional PIN lock |
+| [`media_button`](ui/media_button/README.md) | — | ✅ | ✅ | Remote-only; quick-actions panel — a scene shortcut + volume up/down |
 | `lock` | 🔜 | 🔜 | 🔜 | With PIN pad detail page |
 
 Click any type name in the table above for its full variable reference and usage examples.

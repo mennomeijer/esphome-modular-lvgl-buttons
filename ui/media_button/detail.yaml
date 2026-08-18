@@ -1,0 +1,127 @@
+---
+# Media button detail page — quick-actions panel with a scene shortcut and
+# volume up/down controls for a Home Assistant media_player.
+# Included automatically by remote.yaml via packages:. Never include directly.
+#
+# Both actions are inherently Home Assistant only (scenes and media_players
+# are HA concepts), so — like the light detail page's scene shortcuts — this
+# page calls homeassistant.action directly instead of going through an
+# abstract local/remote script contract.
+#
+# vars (passed through by remote.yaml):
+#   uid, text, page_id
+#   scene_entity_id, scene_text, scene_icon
+#   media_player_entity_id
+
+lvgl:
+  pages:
+  - id: ${uid}_detail_page
+    styles: page_style
+    scrollable: false
+    scrollbar_mode: "OFF"
+    widgets:
+
+    # ── HEADER ────────────────────────────────────────────────────────────
+    - button:
+        id: ${uid}_back_btn
+        align: TOP_LEFT
+        x: 10
+        y: 10
+        width: 60
+        height: 60
+        bg_opa: transp
+        border_width: 0
+        shadow_width: 0
+        radius: 30
+        widgets:
+        - label:
+            align: CENTER
+            text_font: $icon_font
+            text_color: $label_on_color
+            text: $mdi_chevron_left
+        on_click:
+        - lvgl.page.show:
+            id: ${page_id | default("main_page")}
+            animation: MOVE_RIGHT
+            time: 300ms
+
+    - label:
+        align: TOP_MID
+        y: 22
+        text_font: nunito_24
+        text_color: $label_on_color
+        text: ${text}
+
+    # ── SCENE SHORTCUT ───────────────────────────────────────────────────
+    - button:
+        id: ${uid}_scene_btn
+        align: CENTER
+        y: -18%
+        width: 75%
+        height: 90
+        radius: 16
+        bg_color: $button_off_color
+        border_width: 0
+        on_click:
+        - homeassistant.action:
+            action: scene.turn_on
+            data:
+              entity_id: ${scene_entity_id}
+        widgets:
+        - label:
+            align: LEFT_MID
+            x: 20
+            text_font: $icon_font
+            text_color: $icon_off_color
+            text: ${scene_icon}
+        - label:
+            align: CENTER
+            text_font: nunito_24
+            text_color: $label_on_color
+            text: ${scene_text}
+
+    # ── VOLUME DOWN ──────────────────────────────────────────────────────
+    - button:
+        id: ${uid}_volume_down_btn
+        align: CENTER
+        x: -20%
+        y: 15%
+        width: 35%
+        height: 90
+        radius: 16
+        bg_color: $button_off_color
+        border_width: 0
+        on_click:
+        - homeassistant.action:
+            action: media_player.volume_down
+            data:
+              entity_id: ${media_player_entity_id}
+        widgets:
+        - label:
+            align: CENTER
+            text_font: $icon_font
+            text_color: $icon_off_color
+            text: $mdi_volume_minus
+
+    # ── VOLUME UP ────────────────────────────────────────────────────────
+    - button:
+        id: ${uid}_volume_up_btn
+        align: CENTER
+        x: 20%
+        y: 15%
+        width: 35%
+        height: 90
+        radius: 16
+        bg_color: $button_off_color
+        border_width: 0
+        on_click:
+        - homeassistant.action:
+            action: media_player.volume_up
+            data:
+              entity_id: ${media_player_entity_id}
+        widgets:
+        - label:
+            align: CENTER
+            text_font: $icon_font
+            text_color: $icon_off_color
+            text: $mdi_volume_plus
