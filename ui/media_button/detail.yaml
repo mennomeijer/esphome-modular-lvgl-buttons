@@ -12,13 +12,10 @@
 #   uid, text, page_id
 #   scene_entity_id, scene_text, scene_icon
 #   media_player_entity_id
-#   zone2_entity_id, zone2_text, zone2_icon — optional "Zone 2 Off" button,
-#   hidden unless zone2_entity_id is set
-#   podcast_media_player_entity_id, podcast_media_id, podcast_text, podcast_icon
-#   — optional Music Assistant play-media button, hidden unless
-#   podcast_media_id is set. Calls music_assistant.play_media with the given
-#   media_id (a Music Assistant URI, e.g. "library://podcast/12345") on
-#   podcast_media_player_entity_id.
+#   zone2_entity_id, zone2_text, zone2_icon — optional "Off" button, hidden
+#   unless zone2_entity_id is set. Stops playback then powers off zone 2.
+#   scene_2_entity_id, scene_2_text, scene_2_icon — optional second scene
+#   shortcut, hidden unless scene_2_entity_id is set
 
 lvgl:
   pages:
@@ -60,15 +57,16 @@ lvgl:
         text: ${text}
 
     # ── SCENE SHORTCUT ───────────────────────────────────────────────────
-    # Four action rows are stacked evenly at y: -20% / 0% / 20% / 40%,
-    # height 80 each — verified to fit within a 480px-tall screen with
-    # margin (row 4 bottom edge lands at y≈472px).
+    # Four action rows, top to bottom: scene, scene 2, zone 2, volume.
+    # Fixed y offsets -100/-10/80/170, height 65 each — row 4 spans
+    # y≈378-443px (absolute), comfortably inside a 480px-tall screen below
+    # the ~90px header.
     - button:
         id: ${uid}_scene_btn
         align: CENTER
-        y: -20%
+        y: -100
         width: 75%
-        height: 80
+        height: 65
         radius: 16
         bg_color: $button_off_color
         border_width: 0
@@ -90,14 +88,79 @@ lvgl:
             text_color: $label_on_color
             text: ${scene_text}
 
+    # ── SCENE 2 SHORTCUT ─────────────────────────────────────────────────
+    # Hidden unless scene_2_entity_id is configured
+    - button:
+        id: ${uid}_scene_2_btn
+        align: CENTER
+        y: -10
+        width: 75%
+        height: 65
+        radius: 16
+        bg_color: $button_off_color
+        border_width: 0
+        hidden: ${"false" if scene_2_entity_id | default("") != "" else "true"}
+        on_click:
+        - homeassistant.action:
+            action: scene.turn_on
+            data:
+              entity_id: ${scene_2_entity_id | default("")}
+        widgets:
+        - label:
+            align: LEFT_MID
+            x: 20
+            text_font: $icon_font
+            text_color: $icon_off_color
+            text: ${scene_2_icon | default("")}
+        - label:
+            align: CENTER
+            text_font: nunito_24
+            text_color: $label_on_color
+            text: ${scene_2_text | default("")}
+
+    # ── ZONE 2 OFF ───────────────────────────────────────────────────────
+    # Hidden unless zone2_entity_id is configured. Stops current playback,
+    # then powers the zone off.
+    - button:
+        id: ${uid}_zone2_off_btn
+        align: CENTER
+        y: 80
+        width: 75%
+        height: 65
+        radius: 16
+        bg_color: $button_off_color
+        border_width: 0
+        hidden: ${"false" if zone2_entity_id | default("") != "" else "true"}
+        on_click:
+        - homeassistant.action:
+            action: media_player.media_stop
+            data:
+              entity_id: ${zone2_entity_id | default("")}
+        - homeassistant.action:
+            action: media_player.turn_off
+            data:
+              entity_id: ${zone2_entity_id | default("")}
+        widgets:
+        - label:
+            align: LEFT_MID
+            x: 20
+            text_font: $icon_font
+            text_color: $icon_off_color
+            text: ${zone2_icon | default("")}
+        - label:
+            align: CENTER
+            text_font: nunito_24
+            text_color: $label_on_color
+            text: ${zone2_text | default("")}
+
     # ── VOLUME DOWN ──────────────────────────────────────────────────────
     - button:
         id: ${uid}_volume_down_btn
         align: CENTER
         x: -20%
-        y: 0%
+        y: 170
         width: 35%
-        height: 80
+        height: 65
         radius: 16
         bg_color: $button_off_color
         border_width: 0
@@ -118,9 +181,9 @@ lvgl:
         id: ${uid}_volume_up_btn
         align: CENTER
         x: 20%
-        y: 0%
+        y: 170
         width: 35%
-        height: 80
+        height: 65
         radius: 16
         bg_color: $button_off_color
         border_width: 0
@@ -135,64 +198,3 @@ lvgl:
             text_font: $icon_font
             text_color: $icon_off_color
             text: $mdi_volume_plus
-
-    # ── ZONE 2 OFF ───────────────────────────────────────────────────────
-    # Hidden unless zone2_entity_id is configured
-    - button:
-        id: ${uid}_zone2_off_btn
-        align: CENTER
-        y: 20%
-        width: 75%
-        height: 80
-        radius: 16
-        bg_color: $button_off_color
-        border_width: 0
-        hidden: ${"false" if zone2_entity_id | default("") != "" else "true"}
-        on_click:
-        - homeassistant.action:
-            action: media_player.turn_off
-            data:
-              entity_id: ${zone2_entity_id | default("")}
-        widgets:
-        - label:
-            align: LEFT_MID
-            x: 20
-            text_font: $icon_font
-            text_color: $icon_off_color
-            text: ${zone2_icon | default("")}
-        - label:
-            align: CENTER
-            text_font: nunito_24
-            text_color: $label_on_color
-            text: ${zone2_text | default("")}
-
-    # ── PODCAST (Music Assistant) ───────────────────────────────────────
-    # Hidden unless podcast_media_id is configured
-    - button:
-        id: ${uid}_podcast_btn
-        align: CENTER
-        y: 40%
-        width: 75%
-        height: 80
-        radius: 16
-        bg_color: $button_off_color
-        border_width: 0
-        hidden: ${"false" if podcast_media_id | default("") != "" else "true"}
-        on_click:
-        - homeassistant.action:
-            action: music_assistant.play_media
-            data:
-              entity_id: ${podcast_media_player_entity_id | default("")}
-              media_id: ${podcast_media_id | default("")}
-        widgets:
-        - label:
-            align: LEFT_MID
-            x: 20
-            text_font: $icon_font
-            text_color: $icon_off_color
-            text: ${podcast_icon | default("")}
-        - label:
-            align: CENTER
-            text_font: nunito_24
-            text_color: $label_on_color
-            text: ${podcast_text | default("")}

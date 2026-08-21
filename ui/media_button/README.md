@@ -2,7 +2,7 @@
 
 # ui/media_button
 
-Remote-only tile that opens a small quick-actions panel: a Home Assistant scene shortcut, volume up/down buttons for a `media_player` entity, and two optional buttons — "Zone 2 Off" and a Music Assistant podcast shortcut. Unlike [`media_player`](../media_player/README.md), there is no playback UI or state polling — the buttons on the detail page just fire actions.
+Remote-only tile that opens a small quick-actions panel: a Home Assistant scene shortcut, volume up/down buttons for a `media_player` entity, and two optional buttons — an "Off" button (stop + power off a second zone) and a second scene shortcut. Unlike [`media_player`](../media_player/README.md), there is no playback UI or state polling — the buttons on the detail page just fire actions.
 
 ## Files
 
@@ -24,13 +24,12 @@ Remote-only tile that opens a small quick-actions panel: a Home Assistant scene 
 | `scene_text` | ✅ | Label for the scene button |
 | `scene_icon` | ✅ | MDI glyph for the scene button |
 | `media_player_entity_id` | ✅ | HA media_player entity controlled by the volume buttons |
-| `zone2_entity_id` | — | HA media_player entity for an optional "Zone 2 Off" button, e.g. `"media_player.denon_avr_x3100w_2_zone2"`. Button is hidden when omitted |
-| `zone2_text` | — | Label for the zone 2 button (default: `"Zone 2 Off"`) |
+| `zone2_entity_id` | — | HA media_player entity for an optional "Off" button, e.g. `"media_player.denon_avr_x3100w_2_zone2"`. Stops playback (`media_player.media_stop`) then powers the zone off (`media_player.turn_off`). Button is hidden when omitted |
+| `zone2_text` | — | Label for the zone 2 button (default: `"Off"`) |
 | `zone2_icon` | — | MDI glyph for the zone 2 button (default: `$mdi_speaker_off`) |
-| `podcast_media_player_entity_id` | — | HA media_player entity the podcast plays on, e.g. `"media_player.living_room_speaker_2"` |
-| `podcast_media_id` | — | Music Assistant URI to play, e.g. `"library://podcast/12345"`. Button is hidden when omitted |
-| `podcast_text` | — | Label for the podcast button (default: `"Podcast"`) |
-| `podcast_icon` | — | MDI glyph for the podcast button (default: `$mdi_podcast`) |
+| `scene_2_entity_id` | — | HA scene entity for an optional second scene shortcut, e.g. `"scene.listen_boom_room_kitchen"`. Button is hidden when omitted |
+| `scene_2_text` | — | Label for the scene 2 button |
+| `scene_2_icon` | — | MDI glyph for the scene 2 button (default: `$mdi_podcast`) |
 | `row_span` | — | Number of rows to span (default: `1`) |
 | `column_span` | — | Number of columns to span (default: `1`) |
 | `page_id` | — | Parent page ID (default: `main_page`) |
@@ -51,10 +50,9 @@ kitchen_radio: !include
     scene_icon: $mdi_radio
     media_player_entity_id: "media_player.denon_avr_x3100w_2"
     zone2_entity_id: "media_player.denon_avr_x3100w_2_zone2"
-    zone2_text: "Zone 2 Off"
-    podcast_media_player_entity_id: "media_player.living_room_speaker_2"
-    podcast_media_id: "library://podcast/12345"
-    podcast_text: "Boom Room"
+    zone2_text: "Off"
+    scene_2_entity_id: "scene.listen_boom_room_kitchen"
+    scene_2_text: "Boom Room"
 ```
 
 ## Required glyphs
@@ -65,12 +63,11 @@ Add to your device `font:` block:
 $mdi_chevron_left   $mdi_volume_minus   $mdi_volume_plus
 ```
 
-Plus whatever glyphs you use for `icon` and `scene_icon` (e.g. `$mdi_radio`), `$mdi_speaker_off` if using the optional zone 2 button (or your own `zone2_icon`), and `$mdi_podcast` if using the optional podcast button (or your own `podcast_icon`).
+Plus whatever glyphs you use for `icon` and `scene_icon` (e.g. `$mdi_radio`), `$mdi_speaker_off` if using the optional zone 2 button (or your own `zone2_icon`), and `$mdi_podcast` if using the optional scene 2 button (or your own `scene_2_icon`).
 
 ## Notes
 
-- This is a **remote-only** entity type — there is no `local.yaml`. Scenes, media_players, and Music Assistant are inherently Home Assistant concepts.
+- This is a **remote-only** entity type — there is no `local.yaml`. Scenes and media_players are inherently Home Assistant concepts.
 - Short-click on the tile opens the detail page directly — there's no single obvious "primary action" to assign to a tap, so it follows the same convention as the `climate` tile rather than `media_player`'s play/pause toggle.
-- The detail page calls `homeassistant.action` directly (`scene.turn_on`, `media_player.volume_up`/`volume_down`, `media_player.turn_off`, `music_assistant.play_media`) instead of going through an abstract local/remote script contract, mirroring how the `light` detail page's optional scene shortcuts work.
-- The podcast button requires the [Music Assistant](https://www.home-assistant.io/integrations/music_assistant/) integration. Get the exact `media_id` URI from the Music Assistant web UI: open the podcast, click the "⋮" menu, and choose **Copy URI**.
-- Up to four action rows (scene, volume, zone 2, podcast) are laid out on the detail page at fixed vertical positions tuned for a 480px-tall screen. On much shorter screens the bottom row may run close to the edge.
+- The detail page calls `homeassistant.action` directly (`scene.turn_on`, `media_player.volume_up`/`volume_down`, `media_player.media_stop`, `media_player.turn_off`) instead of going through an abstract local/remote script contract, mirroring how the `light` detail page's optional scene shortcuts work.
+- Up to four action rows, top to bottom: scene, scene 2, zone 2, volume — laid out on the detail page at fixed vertical positions (y: -100 / -10 / 80 / 170, height 65 each) tuned for a 480px-tall screen. On much shorter screens the bottom row may run close to the edge.
