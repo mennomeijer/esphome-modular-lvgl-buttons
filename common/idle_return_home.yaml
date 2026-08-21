@@ -2,22 +2,23 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 # IDLE RETURN TO HOME PAGE
 # ═══════════════════════════════════════════════════════════════════════════════
-# Automatically navigates back to main_page after the display has gone
-# unused (no touch input) for a configurable timeout while some other page
-# (a detail page, a sub-screen, ...) is showing.
+# Navigates back to main_page once after the display has gone unused (no
+# touch input) for a configurable timeout, then re-arms as soon as the
+# screen is touched again.
 #
-# Reads LVGL's own built-in inactivity timer (the same one that drives the
-# backlight idle timeout in backlight_time.yaml) instead of hooking touch
-# events itself, so it needs no changes to any hardware file, page, or
-# button — just include this file.
+# This deliberately does NOT try to detect "is main_page currently active" —
+# two attempts at that both hit dead ends: ESPHome wraps LVGL pages in an
+# internal type that isn't directly comparable to a raw lv_obj_t* (so
+# lv_scr_act() can't be compared to id(main_page) without a cast into
+# internals this library shouldn't depend on), and adding an identifying
+# marker widget to main_page requires a free grid cell — which doesn't
+# exist on a fully-tiled page (e.g. a 3x2 grid with 6 tiles already fills
+# every cell).
 #
-# "Are we currently on main_page?" is answered by adding one permanent,
-# invisible 1x1 marker widget to main_page and comparing its screen
-# ancestor (lv_obj_get_screen — always main_page's own lv_obj_t, since the
-# marker never moves) against the currently active screen (lv_scr_act()).
-# Both sides are plain lv_obj_t*, unlike ESPHome's page ids themselves
-# (id(main_page) is an internal LvPageType*, not directly comparable to a
-# raw LVGL screen pointer) — this sidesteps needing that internal type.
+# Instead, it just fires lvgl.page.show once per idle period (a "triggered"
+# flag re-arms on the next touch), regardless of which page is currently
+# showing. In the rare case the screen is already sitting on main_page when
+# the timeout hits, this replays one harmless same-page transition.
 #
 # Optional substitution (default provided below, override in your device
 # YAML to change it):
@@ -27,22 +28,10 @@
 substitutions:
   idle_home_timeout_minutes: "5"
 
-lvgl:
-  pages:
-  - id: !extend main_page
-    widgets:
-    - obj:
-        id: idle_return_home_marker
-        grid_cell_row_pos: 0
-        grid_cell_column_pos: 0
-        width: 1
-        height: 1
-        hidden: true
-        clickable: false
-        scrollable: false
-        bg_opa: transp
-        border_width: 0
-        shadow_opa: transp
+globals:
+- id: idle_home_triggered
+  type: bool
+  initial_value: 'false'
 
 interval:
 - interval: 15s
@@ -53,8 +42,14 @@ interval:
           float timeout_min = ${idle_home_timeout_minutes};
           if (timeout_min <= 0) return false;
           uint32_t idle_ms = lv_disp_get_inactive_time(nullptr);
-          if (idle_ms < (uint32_t)(timeout_min * 60000.0f)) return false;
-          return lv_obj_get_screen(id(idle_return_home_marker)) != lv_scr_act();
+          bool past_timeout = idle_ms >= (uint32_t)(timeout_min * 60000.0f);
+          if (!past_timeout) {
+            id(idle_home_triggered) = false;
+            return false;
+          }
+          if (id(idle_home_triggered)) return false;
+          id(idle_home_triggered) = true;
+          return true;
       then:
       - lvgl.page.show:
           id: main_page
