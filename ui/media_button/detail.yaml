@@ -12,6 +12,8 @@
 #   uid, text, page_id
 #   scene_entity_id, scene_text, scene_icon
 #   media_player_entity_id
+#   zone2_entity_id, zone2_text, zone2_icon — optional "Zone 2 Off" button,
+#   hidden unless zone2_entity_id is set
 
 lvgl:
   pages:
@@ -125,3 +127,33 @@ lvgl:
             text_font: $icon_font
             text_color: $icon_off_color
             text: $mdi_volume_plus
+
+    # ── ZONE 2 OFF ───────────────────────────────────────────────────────
+    # Hidden unless zone2_entity_id is configured
+    - button:
+        id: ${uid}_zone2_off_btn
+        align: CENTER
+        y: 55%
+        width: 75%
+        height: 90
+        radius: 16
+        bg_color: $button_off_color
+        border_width: 0
+        hidden: ${"false" if zone2_entity_id | default("") != "" else "true"}
+        on_click:
+        - homeassistant.action:
+            action: media_player.turn_off
+            data:
+              entity_id: ${zone2_entity_id | default("")}
+        widgets:
+        - label:
+            align: LEFT_MID
+            x: 20
+            text_font: $icon_font
+            text_color: $icon_off_color
+            text: ${zone2_icon | default("")}
+        - label:
+            align: CENTER
+            text_font: nunito_24
+            text_color: $label_on_color
+            text: ${zone2_text | default("")}

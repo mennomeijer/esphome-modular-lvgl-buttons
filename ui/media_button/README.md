@@ -24,6 +24,9 @@ Remote-only tile that opens a small quick-actions panel: one Home Assistant scen
 | `scene_text` | ✅ | Label for the scene button |
 | `scene_icon` | ✅ | MDI glyph for the scene button |
 | `media_player_entity_id` | ✅ | HA media_player entity controlled by the volume buttons |
+| `zone2_entity_id` | — | HA media_player entity for an optional "Zone 2 Off" button, e.g. `"media_player.denon_avr_x3100w_2_zone2"`. Button is hidden when omitted |
+| `zone2_text` | — | Label for the zone 2 button (default: `"Zone 2 Off"`) |
+| `zone2_icon` | — | MDI glyph for the zone 2 button (default: `$mdi_speaker_off`) |
 | `row_span` | — | Number of rows to span (default: `1`) |
 | `column_span` | — | Number of columns to span (default: `1`) |
 | `page_id` | — | Parent page ID (default: `main_page`) |
@@ -53,7 +56,7 @@ Add to your device `font:` block:
 $mdi_chevron_left   $mdi_volume_minus   $mdi_volume_plus
 ```
 
-Plus whatever glyphs you use for `icon` and `scene_icon` (e.g. `$mdi_radio`).
+Plus whatever glyphs you use for `icon` and `scene_icon` (e.g. `$mdi_radio`), and `$mdi_speaker_off` if using the optional zone 2 button (or your own `zone2_icon`).
 
 ## Notes
 

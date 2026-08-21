@@ -27,6 +27,12 @@ Capabilities (RGB, CCT, brightness-only) are **detected at runtime** — never d
 | `row_span` | — | Number of rows to span (default: `1`) |
 | `column_span` | — | Number of columns to span (default: `1`) |
 | `page_id` | — | Parent page ID to place the tile on (default: `main_page`) |
+| `scene_1_entity_id` | — | HA scene entity for an optional icon-only scene shortcut, e.g. `"scene.keuken_night"` |
+| `scene_1_icon` | — | MDI glyph for the scene 1 button |
+| `scene_2_entity_id` | — | HA scene entity for a second optional scene shortcut |
+| `scene_2_icon` | — | MDI glyph for the scene 2 button |
+
+Scene shortcuts always call Home Assistant directly (`scene.turn_on`), regardless of whether the light itself is local or remote — scenes have no local ESPHome equivalent. They appear as icon-only buttons in the detail page's bottom control row, next to the back button, and are hidden individually when their `entity_id` is left blank.
 
 ## Usage
 

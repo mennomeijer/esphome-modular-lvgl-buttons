@@ -17,6 +17,9 @@
 #   scene_text:              label for the scene button
 #   scene_icon:              icon glyph for the scene button
 #   media_player_entity_id:  HA media_player entity controlled by the volume buttons
+#   zone2_entity_id:         optional HA media_player entity for a "Zone 2 Off" button
+#   zone2_text:              label for the zone 2 button (optional)
+#   zone2_icon:              icon glyph for the zone 2 button (optional)
 
 packages:
   ${uid}_detail: !include
@@ -29,6 +32,9 @@ packages:
       scene_text: ${scene_text}
       scene_icon: ${scene_icon}
       media_player_entity_id: ${media_player_entity_id}
+      zone2_entity_id: ${zone2_entity_id | default("")}
+      zone2_text: ${zone2_text | default("Zone 2 Off")}
+      zone2_icon: ${zone2_icon | default("$mdi_speaker_off")}
 
 lvgl:
   pages:
