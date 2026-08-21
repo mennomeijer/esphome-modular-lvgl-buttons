@@ -11,6 +11,14 @@
 # events itself, so it needs no changes to any hardware file, page, or
 # button — just include this file.
 #
+# "Are we currently on main_page?" is answered by adding one permanent,
+# invisible 1x1 marker widget to main_page and comparing its screen
+# ancestor (lv_obj_get_screen — always main_page's own lv_obj_t, since the
+# marker never moves) against the currently active screen (lv_scr_act()).
+# Both sides are plain lv_obj_t*, unlike ESPHome's page ids themselves
+# (id(main_page) is an internal LvPageType*, not directly comparable to a
+# raw LVGL screen pointer) — this sidesteps needing that internal type.
+#
 # Optional substitution (default provided below, override in your device
 # YAML to change it):
 #   idle_home_timeout_minutes: "5"   # Minutes of inactivity before returning home (0 disables)
@@ -18,6 +26,23 @@
 
 substitutions:
   idle_home_timeout_minutes: "5"
+
+lvgl:
+  pages:
+  - id: !extend main_page
+    widgets:
+    - obj:
+        id: idle_return_home_marker
+        grid_cell_row_pos: 0
+        grid_cell_column_pos: 0
+        width: 1
+        height: 1
+        hidden: true
+        clickable: false
+        scrollable: false
+        bg_opa: transp
+        border_width: 0
+        shadow_opa: transp
 
 interval:
 - interval: 15s
@@ -28,7 +53,8 @@ interval:
           float timeout_min = ${idle_home_timeout_minutes};
           if (timeout_min <= 0) return false;
           uint32_t idle_ms = lv_disp_get_inactive_time(nullptr);
-          return idle_ms >= (uint32_t)(timeout_min * 60000.0f) && lv_scr_act() != id(main_page);
+          if (idle_ms < (uint32_t)(timeout_min * 60000.0f)) return false;
+          return lv_obj_get_screen(id(idle_return_home_marker)) != lv_scr_act();
       then:
       - lvgl.page.show:
           id: main_page
