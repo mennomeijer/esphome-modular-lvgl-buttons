@@ -17,13 +17,13 @@
 #   scene_text:              label for the scene button
 #   scene_icon:              icon glyph for the scene button
 #   media_player_entity_id:  HA media_player entity controlled by the volume buttons
-#   zone2_entity_id:         optional HA media_player entity for a "Zone 2 Off" button
-#   zone2_text:              label for the zone 2 button (optional)
+#   zone2_entity_id:         optional HA media_player entity for a "Off" button that stops
+#                            and powers off zone 2
+#   zone2_text:              label for the zone 2 button (optional, default: "Off")
 #   zone2_icon:              icon glyph for the zone 2 button (optional)
-#   podcast_media_player_entity_id: HA media_player entity for the optional podcast button
-#   podcast_media_id:        Music Assistant URI to play, e.g. "library://podcast/12345"
-#   podcast_text:            label for the podcast button (optional)
-#   podcast_icon:            icon glyph for the podcast button (optional)
+#   scene_2_entity_id:       optional second HA scene entity for a second scene shortcut
+#   scene_2_text:            label for the scene 2 button (optional)
+#   scene_2_icon:            icon glyph for the scene 2 button (optional)
 
 packages:
   ${uid}_detail: !include
@@ -37,12 +37,11 @@ packages:
       scene_icon: ${scene_icon}
       media_player_entity_id: ${media_player_entity_id}
       zone2_entity_id: ${zone2_entity_id | default("")}
-      zone2_text: ${zone2_text | default("Zone 2 Off")}
+      zone2_text: ${zone2_text | default("Off")}
       zone2_icon: ${zone2_icon | default("$mdi_speaker_off")}
-      podcast_media_player_entity_id: ${podcast_media_player_entity_id | default("")}
-      podcast_media_id: ${podcast_media_id | default("")}
-      podcast_text: ${podcast_text | default("Podcast")}
-      podcast_icon: ${podcast_icon | default("$mdi_podcast")}
+      scene_2_entity_id: ${scene_2_entity_id | default("")}
+      scene_2_text: ${scene_2_text | default("")}
+      scene_2_icon: ${scene_2_icon | default("$mdi_podcast")}
 
 lvgl:
   pages:
