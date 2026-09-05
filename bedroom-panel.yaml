@@ -121,7 +121,11 @@ packages:
   # the night_lockout global used by the hard schedule below.
   backlight: !include esphome-modular-lvgl-buttons/common/backlight_time.yaml
   # Guition ESP32-S3, 4.0", 480x480 — swap for your board (see hardware/*.yaml)
-  hardware: !include esphome-modular-lvgl-buttons/hardware/guition-esp32-s3-4848s040.yaml
+  # rotation: rotated counter-clockwise 90° from the hardware default (180 -> 90)
+  hardware: !include
+    file: esphome-modular-lvgl-buttons/hardware/guition-esp32-s3-4848s040.yaml
+    vars:
+      rotation: "90"
   loading_screen: !include esphome-modular-lvgl-buttons/pages/loading.yaml
   info_screen: !include esphome-modular-lvgl-buttons/pages/info.yaml
 
