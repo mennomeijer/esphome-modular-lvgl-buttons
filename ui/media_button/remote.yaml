@@ -21,6 +21,10 @@
 #                            and powers off zone 2
 #   zone2_text:              label for the zone 2 button (optional, default: "Off")
 #   zone2_icon:              icon glyph for the zone 2 button (optional)
+#   stop_entity_id:          optional additional HA media_player entity to stop
+#                            (media_player.media_stop) when the zone 2 "Off" button
+#                            is pressed, e.g. a separate streaming source feeding
+#                            the same zone
 #   scene_2_entity_id:       optional second HA scene entity for a second scene shortcut
 #   scene_2_text:            label for the scene 2 button (optional)
 #   scene_2_icon:            icon glyph for the scene 2 button (optional)
@@ -39,6 +43,7 @@ packages:
       zone2_entity_id: ${zone2_entity_id | default("")}
       zone2_text: ${zone2_text | default("Off")}
       zone2_icon: ${zone2_icon | default("$mdi_speaker_off")}
+      stop_entity_id: ${stop_entity_id | default("")}
       scene_2_entity_id: ${scene_2_entity_id | default("")}
       scene_2_text: ${scene_2_text | default("")}
       scene_2_icon: ${scene_2_icon | default("$mdi_podcast")}

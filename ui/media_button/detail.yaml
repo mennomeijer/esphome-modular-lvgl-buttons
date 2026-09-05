@@ -14,6 +14,9 @@
 #   media_player_entity_id
 #   zone2_entity_id, zone2_text, zone2_icon — optional "Off" button, hidden
 #   unless zone2_entity_id is set. Stops playback then powers off zone 2.
+#   stop_entity_id — optional additional HA media_player entity to stop
+#   (media_player.media_stop) when the zone2 off button is pressed, e.g. a
+#   separate streaming source (Music Assistant, ...) feeding the same zone
 #   scene_2_entity_id, scene_2_text, scene_2_icon — optional second scene
 #   shortcut, hidden unless scene_2_entity_id is set
 
@@ -119,8 +122,9 @@ lvgl:
             text: ${scene_2_text | default("")}
 
     # ── ZONE 2 OFF ───────────────────────────────────────────────────────
-    # Hidden unless zone2_entity_id is configured. Stops current playback,
-    # then powers the zone off.
+    # Hidden unless zone2_entity_id is configured. Stops stop_entity_id (if
+    # configured) — e.g. a separate streaming source feeding the same zone —
+    # then stops current playback and powers the zone off.
     - button:
         id: ${uid}_zone2_off_btn
         align: CENTER
@@ -132,6 +136,14 @@ lvgl:
         border_width: 0
         hidden: ${"false" if zone2_entity_id | default("") != "" else "true"}
         on_click:
+        - if:
+            condition:
+              lambda: return strcmp("${stop_entity_id | default('')}", "") != 0;
+            then:
+            - homeassistant.action:
+                action: media_player.media_stop
+                data:
+                  entity_id: ${stop_entity_id | default("")}
         - homeassistant.action:
             action: media_player.media_stop
             data:
