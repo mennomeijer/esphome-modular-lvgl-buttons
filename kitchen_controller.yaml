@@ -67,7 +67,11 @@ packages:
 
   idle_return_home: !include esphome-modular-lvgl-buttons/common/idle_return_home.yaml
 
-  hardware: !include esphome-modular-lvgl-buttons/hardware/guition-esp32-s3-4848s040.yaml
+  # rotation: rotated counter-clockwise 90° from the hardware default (180 -> 90)
+  hardware: !include
+    file: esphome-modular-lvgl-buttons/hardware/guition-esp32-s3-4848s040.yaml
+    vars:
+      rotation: "90"
 
   loading_screen: !include esphome-modular-lvgl-buttons/pages/loading.yaml
 
