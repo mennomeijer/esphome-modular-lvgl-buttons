@@ -24,9 +24,10 @@ Remote-only tile that opens a small quick-actions panel: a Home Assistant scene 
 | `scene_text` | ✅ | Label for the scene button |
 | `scene_icon` | ✅ | MDI glyph for the scene button |
 | `media_player_entity_id` | ✅ | HA media_player entity controlled by the volume buttons |
-| `zone2_entity_id` | — | HA media_player entity for an optional "Off" button, e.g. `"media_player.denon_avr_x3100w_2_zone2"`. Stops playback (`media_player.media_stop`) then powers the zone off (`media_player.turn_off`). Button is hidden when omitted |
+| `zone2_entity_id` | — | HA media_player entity for an optional "Off" button, e.g. `"media_player.denon_avr_x3100w_2"`. Stops playback (`media_player.media_stop`) then powers the zone off (`media_player.turn_off`). Button is hidden when omitted |
 | `zone2_text` | — | Label for the zone 2 button (default: `"Off"`) |
 | `zone2_icon` | — | MDI glyph for the zone 2 button (default: `$mdi_speaker_off`) |
+| `stop_entity_id` | — | Optional additional HA media_player entity to stop (`media_player.media_stop`) when the zone 2 "Off" button is pressed, e.g. a separate streaming source (Music Assistant, ...) feeding the same zone |
 | `scene_2_entity_id` | — | HA scene entity for an optional second scene shortcut, e.g. `"scene.listen_boom_room_kitchen"`. Button is hidden when omitted |
 | `scene_2_text` | — | Label for the scene 2 button |
 | `scene_2_icon` | — | MDI glyph for the scene 2 button (default: `$mdi_podcast`) |
@@ -70,4 +71,5 @@ Plus whatever glyphs you use for `icon` and `scene_icon` (e.g. `$mdi_radio`), `$
 - This is a **remote-only** entity type — there is no `local.yaml`. Scenes and media_players are inherently Home Assistant concepts.
 - Short-click on the tile opens the detail page directly — there's no single obvious "primary action" to assign to a tap, so it follows the same convention as the `climate` tile rather than `media_player`'s play/pause toggle.
 - The detail page calls `homeassistant.action` directly (`scene.turn_on`, `media_player.volume_up`/`volume_down`, `media_player.media_stop`, `media_player.turn_off`) instead of going through an abstract local/remote script contract, mirroring how the `light` detail page's optional scene shortcuts work.
+- The zone 2 "Off" button first stops `stop_entity_id` (if configured), then stops and powers off `zone2_entity_id`.
 - Up to four action rows, top to bottom: scene, scene 2, zone 2, volume — laid out on the detail page at fixed vertical positions (y: -100 / -10 / 80 / 170, height 65 each) tuned for a 480px-tall screen. On much shorter screens the bottom row may run close to the edge.
