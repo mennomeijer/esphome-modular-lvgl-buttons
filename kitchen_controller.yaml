@@ -155,6 +155,8 @@ packages:
       scene_2_entity_id: "scene.listen_boom_room_kitchen"
       scene_2_text: "Boom Room"
       scene_2_icon: $mdi_podcast
+      input_entity_id: "media_player.denon_avr_x3100w"
+      input_source: "Lvngrm speak"
 
 lvgl:
   pages:
@@ -203,6 +205,7 @@ font:
       - $mdi_radio
       - $mdi_podcast
       - $mdi_speaker_off
+      - $mdi_speaker
       - $mdi_chevron_left
         
   - file: "gfonts://Nunito"
