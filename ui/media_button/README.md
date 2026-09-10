@@ -31,6 +31,9 @@ Remote-only tile that opens a small quick-actions panel: a Home Assistant scene 
 | `scene_2_entity_id` | — | HA scene entity for an optional second scene shortcut, e.g. `"scene.listen_boom_room_kitchen"`. Button is hidden when omitted |
 | `scene_2_text` | — | Label for the scene 2 button |
 | `scene_2_icon` | — | MDI glyph for the scene 2 button (default: `$mdi_podcast`) |
+| `input_entity_id` | — | HA media_player entity for an optional small icon-only button between the volume buttons, e.g. `"media_player.denon_avr_x3100w"`. Turns it on (harmless no-op if already on), then calls `media_player.select_source` with `input_source`. Button is hidden when omitted |
+| `input_source` | — | HA source name passed to `media_player.select_source`, e.g. `"Lvngrm speak"` |
+| `input_icon` | — | MDI glyph for the input button (default: `$mdi_speaker`) |
 | `row_span` | — | Number of rows to span (default: `1`) |
 | `column_span` | — | Number of columns to span (default: `1`) |
 | `page_id` | — | Parent page ID (default: `main_page`) |
@@ -64,7 +67,7 @@ Add to your device `font:` block:
 $mdi_chevron_left   $mdi_volume_minus   $mdi_volume_plus
 ```
 
-Plus whatever glyphs you use for `icon` and `scene_icon` (e.g. `$mdi_radio`), `$mdi_speaker_off` if using the optional zone 2 button (or your own `zone2_icon`), and `$mdi_podcast` if using the optional scene 2 button (or your own `scene_2_icon`).
+Plus whatever glyphs you use for `icon` and `scene_icon` (e.g. `$mdi_radio`), `$mdi_speaker_off` if using the optional zone 2 button (or your own `zone2_icon`), `$mdi_podcast` if using the optional scene 2 button (or your own `scene_2_icon`), and `$mdi_speaker` if using the optional input button (or your own `input_icon`).
 
 ## Notes
 
@@ -73,3 +76,4 @@ Plus whatever glyphs you use for `icon` and `scene_icon` (e.g. `$mdi_radio`), `$
 - The detail page calls `homeassistant.action` directly (`scene.turn_on`, `media_player.volume_up`/`volume_down`, `media_player.media_stop`, `media_player.turn_off`) instead of going through an abstract local/remote script contract, mirroring how the `light` detail page's optional scene shortcuts work.
 - The zone 2 "Off" button first stops `stop_entity_id` (if configured), then stops and powers off `zone2_entity_id`.
 - Up to four action rows, top to bottom: scene, scene 2, zone 2, volume — laid out on the detail page at fixed vertical positions (y: -100 / -10 / 80 / 170, height 65 each) tuned for a 480px-tall screen. On much shorter screens the bottom row may run close to the edge.
+- The optional input button sits in the volume row, centered between the volume down/up buttons (which narrow from 35%/±20% to 32%/±25% width/offset to make room for it).

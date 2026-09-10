@@ -28,6 +28,11 @@
 #   scene_2_entity_id:       optional second HA scene entity for a second scene shortcut
 #   scene_2_text:            label for the scene 2 button (optional)
 #   scene_2_icon:            icon glyph for the scene 2 button (optional)
+#   input_entity_id:         optional HA media_player entity for a small icon-only button
+#                            between the volume buttons. Turns it on then selects
+#                            input_source. Hidden unless set
+#   input_source:            HA source name passed to media_player.select_source
+#   input_icon:              icon glyph for the input button (optional, default: $mdi_speaker)
 
 packages:
   ${uid}_detail: !include
@@ -47,6 +52,9 @@ packages:
       scene_2_entity_id: ${scene_2_entity_id | default("")}
       scene_2_text: ${scene_2_text | default("")}
       scene_2_icon: ${scene_2_icon | default("$mdi_podcast")}
+      input_entity_id: ${input_entity_id | default("")}
+      input_source: ${input_source | default("")}
+      input_icon: ${input_icon | default("$mdi_speaker")}
 
 lvgl:
   pages:
