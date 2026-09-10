@@ -1,0 +1,177 @@
+
+---
+# Tilt-only cover button with optional slider
+# For covers that only support tilt actions (no lift/position) — e.g. Zigbee2MQTT
+# "blind_tilt" motors — where 0% tilt is closed one way and 100% tilt is closed
+# the other way, with open somewhere in between.
+# Short pressing the button toggles the cover (open/close tilt)
+# Long pressing the button stops the cover
+# The slider is a thin horizontal bar spanning the tile between the icon and
+# the label. Dragging it snaps the released value to the nearest 25% stop
+# (0/25/50/75/100) before sending it as the tilt position.
+# The icon color changes to the target state when in transit (opening / closing).
+# The button color changes to the actual state when stationary (open / closed).
+# vars:
+#    uid:
+#    row:
+#    column:
+#    row_span:
+#    column_span:
+#    text:
+#    icon:
+#    entity_id:
+#    hide_slider: # Set to "true" to hide. Default "false".
+
+lvgl:
+  pages:
+    - id: !extend main_page
+      widgets:
+        - container:
+            id: ${uid}
+            grid_cell_row_pos: ${row}
+            grid_cell_column_pos: ${column}
+            grid_cell_row_span: ${row_span | default(1)}
+            grid_cell_column_span: ${column_span | default(1)}
+            grid_cell_x_align: stretch
+            grid_cell_y_align: stretch
+            widgets:
+              - button:
+                  id: button_${uid}
+                  widgets:
+                    - label:
+                        id: icon_${uid}
+                        text_font: $icon_font
+                        align: top_left
+                        text: ${icon}
+                    - label:
+                        id: label_${uid}
+                        align: bottom_left
+                        text: ${text}
+                    - slider:
+                        id: slider_${uid}
+                        hidden: ${hide_slider | default("false")}
+                        align: top_mid
+                        y: 34
+                        width: 85%
+                        height: 8
+                        min_value: 0
+                        max_value: 100
+                        radius: 4
+                        knob:
+                          pad_top: -6
+                          pad_bottom: -6
+                          bg_color: $label_off_color
+                        indicator:
+                          radius: 4
+                          bg_color: $label_off_color
+                        on_release:
+                          - lambda: |-
+                              int snapped = ((int(x) + 12) / 25) * 25;
+                              if (snapped > 100) snapped = 100;
+                              if (snapped < 0) snapped = 0;
+                              lv_slider_set_value(id(slider_${uid}), snapped, LV_ANIM_OFF);
+                          - homeassistant.action:
+                              action: cover.set_cover_tilt_position
+                              data:
+                                entity_id: ${entity_id}
+                                tilt_position: !lambda return lv_slider_get_value(id(slider_${uid}));
+                  on_short_click:
+                    then:
+                      - homeassistant.action:
+                          action: cover.toggle_cover_tilt
+                          data:
+                            entity_id: ${entity_id}
+                  on_long_press:
+                    then:
+                      - homeassistant.action:
+                          action: cover.stop_cover_tilt
+                          data:
+                            entity_id: ${entity_id}
+
+text_sensor:
+  - platform: homeassistant
+    id: ha_state_${uid}
+    entity_id: ${entity_id}
+    internal: true
+    on_value:
+      - if:
+          condition:
+            lambda: 'return x == "open";'
+          then:
+            - lvgl.widget.update:
+                id: button_${uid}
+                bg_color: $button_on_color
+            - lvgl.widget.update:
+                id: icon_${uid}
+                text_color: $icon_on_color
+            - lvgl.widget.update:
+                id: label_${uid}
+                text_color: $label_on_color
+      - if:
+          condition:
+            lambda: 'return x == "opening";'
+          then:
+            - lvgl.widget.update:
+                id: button_${uid}
+                bg_color: $button_off_color
+            - lvgl.widget.update:
+                id: icon_${uid}
+                text_color: $icon_on_color
+            - lvgl.widget.update:
+                id: label_${uid}
+                text_color: $label_off_color
+      - if:
+          condition:
+            lambda: 'return x == "closing";'
+          then:
+            - lvgl.widget.update:
+                id: button_${uid}
+                bg_color: $button_on_color
+            - lvgl.widget.update:
+                id: icon_${uid}
+                text_color: $icon_off_color
+            - lvgl.widget.update:
+                id: label_${uid}
+                text_color: $label_on_color
+      - if:
+          condition:
+            lambda: 'return x == "closed";'
+          then:
+            - lvgl.widget.update:
+                id: button_${uid}
+                bg_color: $button_off_color
+            - lvgl.widget.update:
+                id: icon_${uid}
+                text_color: $icon_off_color
+            - lvgl.widget.update:
+                id: label_${uid}
+                text_color: $label_off_color
+
+sensor:
+  - platform: homeassistant
+    id: ha_pos_${uid}
+    entity_id: ${entity_id}
+    attribute: current_tilt_position
+    internal: true
+    filters:
+      - filter_out: nan
+
+  - platform: template
+    id: position_${uid}
+    unit_of_measurement: "%"
+    update_interval: 1s
+    lambda: |-
+      if (lv_obj_has_flag(id(slider_${uid}), LV_OBJ_FLAG_HIDDEN)) return NAN;
+      float attr_pos = id(ha_pos_${uid}).state;
+      std::string state = id(ha_state_${uid}).state;
+      if (!isnan(attr_pos)) return attr_pos;
+      if (state == "open" || state == "opening") return 100.0f;
+      return 0.0f;
+    on_value:
+      - if:
+          condition:
+            lambda: 'return !lv_obj_has_flag(id(slider_${uid}), LV_OBJ_FLAG_HIDDEN);'
+          then:
+            - lvgl.slider.update:
+                id: slider_${uid}
+                value: !lambda return x;
