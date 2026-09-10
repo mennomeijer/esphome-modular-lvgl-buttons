@@ -123,16 +123,16 @@ packages:
       text: "Boiler"
       icon: $mdi_power_plug
 
-  office_blinds: !include                                                                                                                                       
-    file: esphome-modular-lvgl-buttons/ui/cover/cover_button.yaml                                                                                               
-    vars:                                                                                                                                                       
-      uid: office_blinds                                                                                                                                      
-      row: 2                                                                                                                                                    
-      column: 0                                
-      text: "Blinds"                                                                                                                                          
+  kitchen_blinds: !include
+    file: esphome-modular-lvgl-buttons/ui/cover/cover_button.yaml
+    vars:
+      uid: kitchen_blinds
+      row: 2
+      column: 0
+      text: "Blinds"
       icon: $mdi_blinds
-      entity_id: "cover.office_blinds"
-      hide_slider: "true"   
+      entity_id: "cover.blind_tilt_e1b4"
+      hide_slider: "true"
 
   # KITCHEN RADIO
 
