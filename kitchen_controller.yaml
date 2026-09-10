@@ -124,7 +124,7 @@ packages:
       icon: $mdi_power_plug
 
   kitchen_blinds: !include
-    file: esphome-modular-lvgl-buttons/ui/cover/cover_button.yaml
+    file: esphome-modular-lvgl-buttons/ui/cover/cover_tilt_button.yaml
     vars:
       uid: kitchen_blinds
       row: 2
@@ -132,7 +132,7 @@ packages:
       text: "Blinds"
       icon: $mdi_blinds
       entity_id: "cover.blind_tilt_e1b4"
-      hide_slider: "true"
+      hide_slider: "false"
 
   # KITCHEN RADIO
 
